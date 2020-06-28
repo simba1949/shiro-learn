@@ -1,0 +1,3 @@
+# Project exclude paths
+/shiro-basis/target/
+/shiro-integrated-spring-boot/target/

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.simba1949.mapper.UserMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(username, password, salt) values(#{user.username}, #{user.password}, #{user.salt})
+    </insert>
+
+    <update id="update">
+        update t_user
+        <set>
+            <if test="null !=user">
+                <if test="null != user.username and '' != user.username">username = #{user.username},</if>
+                <if test="null != user.password and '' != user.password">password = #{user.password},</if>
+                <if test="null != user.salt and '' != user.salt">salt = #{user.salt},</if>
+            </if>
+        </set>
+        where id = #{user.id}
+    </update>
+
+    <delete id="delete">
+        delete from t_user where id = #{id}
+    </delete>
+
+    <select id="get" resultType="top.simba1949.entity.User">
+        select id,username,password,salt from t_user where id = #{id}
+    </select>
+
+    <select id="select" resultType="top.simba1949.entity.User">
+        select id,username,password,salt from t_user
+        <where>
+            <if test="null != user">
+                <if test="null != user.username and '' != user.username">and username = #{user.username}</if>
+                <if test="null != user.password and '' != user.password">and password = #{user.password}</if>
+                <if test="null != user.salt and '' != user.salt">and salt = #{user.salt}</if>
+                <if test="null != user.id ">and id = #{user.id}</if>
+            </if>
+        </where>
+    </select>
+    <select id="getByUsername" resultType="top.simba1949.entity.User">
+        select id,username,password,salt from t_user where username = #{username} limit 1
+    </select>
+
+    <select id="listRoles" resultType="java.lang.String">
+        select distinct r.role_name roleName
+        from t_user_role ur right join t_role r on ur.role_id = r.id
+        where ur.user_id = #{userId}
+    </select>
+    <select id="listPermissions" resultType="java.lang.String">
+        select distinct p.permission_name
+        from t_user u right join t_user_role ur on u.id = ur.user_id
+        right join t_role r on ur.role_id = r.id
+        left join t_role_permission rp on rp.role_id = r.id
+        right join t_permission p on rp.permission_id = p.id
+        where ur.user_id = #{userId}
+    </select>
+</mapper>
